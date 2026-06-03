@@ -63,7 +63,7 @@ with st.sidebar:
 
     st.markdown("---")
     st.markdown("### 📱 Developer SNS")
-    st.markdown("[📸 공식 인스타그램 바로가기](https://instagram.com)")
+    st.markdown("[📸 공식 인스타그램 바로가기](https://www.instagram.com/what_is_in_my_fridge/)")
     
     st.markdown("---")
     st.markdown("### 💡 이용 가이드")

@@ -15,7 +15,7 @@ with st.sidebar:
     
     # 개발자 정보 및 인스타그램 링크 파트
     st.markdown("### 📱 Developer SNS")
-    st.markdown("[📸 공식 인스타그램 바로가기](https://instagram.com)") # 실제 주소가 있다면 바꾸셔도 됩니다!
+    st.markdown("[📸 공식 인스타그램 바로가기](https://www.instagram.com/what_is_in_my_fridge/)")
     
     st.markdown("---")
     st.markdown("### 💡 이용 가이드")

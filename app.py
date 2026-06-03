@@ -76,7 +76,7 @@ with st.sidebar:
 # --- 3. 메인 화면 대시보드 ---
 st.title("🥑 자취생 냉장고 관리 & 가성비 레시피 추천")
 
-# 🚨 [기능 추가] 유통기한 경고 알림 시스템 (메인 상단에 고정 노출)
+# 🚨 유통기한 경고 알림 시스템 (메인 상단에 고정 노출)
 today = datetime.now().date()
 expired_list = []
 imminent_list = []
@@ -89,4 +89,5 @@ for item in st.session_state.food_items:
         if days_left < 0:
             expired_list.append(f"**{item['name']}** (지남: {abs(days_left)}일)")
         elif 0 <= days_left <= 3:
-            im
+            # 🌟 이 부분을 아래 문장으로 정확하게 고쳐주세요!
+            imminent_list.append(f"**{item['name']}** (남은 기한: {days_left}일)")

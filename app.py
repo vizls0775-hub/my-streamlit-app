@@ -89,5 +89,4 @@ for item in st.session_state.food_items:
         if days_left < 0:
             expired_list.append(f"**{item['name']}** (지남: {abs(days_left)}일)")
         elif 0 <= days_left <= 3:
-            # 🌟 이 부분을 아래 문장으로 정확하게 고쳐주세요!
             imminent_list.append(f"**{item['name']}** (남은 기한: {days_left}일)")

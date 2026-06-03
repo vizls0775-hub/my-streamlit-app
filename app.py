@@ -8,11 +8,22 @@ import os
 # --- 0. 페이지 기본 설정 ---
 st.set_page_config(page_title="자취생 냉장고 파먹기", page_icon="🥑", layout="wide")
 
-# --- 1. 세션 상태(Session State) 초기화 ---
-# 앱이 재실행되어도 데이터가 날아가지 않도록 저장 공간을 만듭니다.
+# --- 1. 사이드바 (Sidebar) 구현 ---
+with st.sidebar:
+    st.image("https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?q=80&w=2071&auto=format&fit=crop", caption="스마트한 냉장고 관리")
+    st.title("📌 바로가기 & 링크")
+    
+    # 개발자 정보 및 인스타그램 링크 파트
+    st.markdown("### 📱 Developer SNS")
+    st.markdown("[📸 공식 인스타그램 바로가기](https://instagram.com)") # 실제 주소가 있다면 바꾸셔도 됩니다!
+    
+    st.markdown("---")
+    st.markdown("### 💡 이용 가이드")
+    st.info("1. 식재료 등록 탭에서 구매한 재료를 입력하세요.\n2. 보관중인 재료를 기반으로 AI 레시피를 추천받으세요.\n3. 버려진 재료는 통계 리포트에 기록됩니다.")
+
+# --- 2. 세션 상태(Session State) 데이터 초기화 ---
 if 'food_items' not in st.session_state:
     st.session_state.food_items = [
-        # 테스트용 초기 데이터 (필요 없으면 지우셔도 됩니다)
         {'name': '계란', 'status': '보관중', 'price': 3000, 'date': (datetime.now() - timedelta(days=2)).strftime('%Y-%m-%d')},
         {'name': '우유', 'status': '버림', 'price': 2500, 'date': (datetime.now() - timedelta(days=5)).strftime('%Y-%m-%d')},
         {'name': '식빵', 'status': '보관중', 'price': 2000, 'date': (datetime.now().strftime('%Y-%m-%d'))}
@@ -20,7 +31,7 @@ if 'food_items' not in st.session_state:
 
 st.title("🥑 자취생 냉장고 관리 & 가성비 레시피 추천")
 
-# 탭 구성
+# 메인 탭 구성
 tab1, tab2, tab3 = st.tabs(["🛒 식재료 등록 및 관리", "🍳 AI 레시피 추천", "📊 음쓰 통계 리포트"])
 
 # --- 🛒 TAB 1: 식재료 관리 ---
@@ -55,13 +66,11 @@ with tab1:
     if st.session_state.food_items:
         df_display = pd.DataFrame(st.session_state.food_items)
         
-        # 상태 변경을 위한 인터페이스
         for idx, item in enumerate(st.session_state.food_items):
             c1, c2, c3, c4 = st.columns([2, 2, 2, 1])
             c1.write(f"**{item['name']}** ({item['price']:,}원)")
             c2.write(f"등록일: {item['date']}")
             
-            # 현재 상태를 기본값으로 선택구문 구성
             current_idx = ["보관중", "먹음", "버림"].index(item['status'])
             changed_status = c3.selectbox(f"상태 변경 ({item['name']})", ["보관중", "먹음", "버림"], index=current_idx, key=f"status_{idx}", label_visibility="collapsed")
             
@@ -79,9 +88,8 @@ with tab1:
 with tab2:
     st.header("🤖 AI 자취 요리사")
     
-    # --- Gemini API 설정 파트 ---
+    # 🌟 이 부분이 Streamlit Cloud (GitHub 배포용) Secrets 환경으로 깔끔하게 교체된 파트입니다.
     try:
-        # Streamlit Secrets 시스템에서 API 키를 안전하게 가져옵니다.
         GOOGLE_API_KEY = st.secrets.get("GEMINI_API_KEY")
 
         if GOOGLE_API_KEY:
@@ -96,10 +104,8 @@ with tab2:
         gemini_model = None
 
     if gemini_model:
-        # 현재 보관 중인 식재료 추출
         available_ingredients = [item['name'] for item in st.session_state.food_items if item['status'] == '보관중']
 
-        # '레시피 추천받기' 버튼
         if st.button("레시피 추천받기"):
             if available_ingredients:
                 st.info("AI가 레시피를 추천 중입니다. 잠시만 기다려주세요...")
@@ -139,11 +145,7 @@ with tab3:
 
     if st.session_state.food_items:
         df_food = pd.DataFrame(st.session_state.food_items)
-
-        # '버림' 처리된 식재료 필터링
         discarded_items = df_food[df_food['status'] == '버림']
-
-        # 버려진 식재료 개수 및 총 가격 계산
         num_discarded = len(discarded_items)
         total_discarded_price = discarded_items['price'].sum()
 
@@ -154,12 +156,10 @@ with tab3:
         st.markdown("---")
         st.subheader("식재료 상태 비율")
 
-        # '보관중', '먹음', '버림'의 비율 계산
         status_counts = df_food['status'].value_counts().reset_index()
         status_counts.columns = ['status', 'count']
 
         if not status_counts.empty:
-            # 깔끔한 파이차트 렌더링
             fig = px.pie(status_counts, values='count', names='status',
                          title='현재 식재료 상태 비율',
                          color_discrete_sequence=px.colors.sequential.RdBu)

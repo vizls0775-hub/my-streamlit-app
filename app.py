@@ -73,11 +73,21 @@ with st.sidebar:
 # --- 3. 메인 화면 대시보드 ---
 st.title("🥑 자취생 냉장고 관리 & 가성비 레시피 추천")
 
-# 🚨 유통기한 경고 알림 시스템 (오타가 완벽히 수정된 파트)
+# 🚨 유통기한 경고 알림 시스템
 today = datetime.now().date()
 expired_list = []
 imminent_list = []
 
 for item in st.session_state.food_items:
     if item['status'] == '보관중' and 'expiry_date' in item:
-        expiry_date = datetime.strptime(item['expiry_date'], '%Y-%m-%d').date
+        expiry_date = datetime.strptime(item['expiry_date'], '%Y-%m-%d').date()
+        days_left = (expiry_date - today).days
+        
+        if days_left < 0:
+            expired_list.append(f"**{item['name']}** (지남: {abs(days_left)}일)")
+        elif 0 <= days_left <= 3:
+            imminent_list.append(f"**{item['name']}** (남은 기한: {days_left}일)")
+
+# 경고 메시지 상단 출력
+if expired_list:
+    st.error(f"🚨 **유통기한 초과 경고!** 다음 재료
